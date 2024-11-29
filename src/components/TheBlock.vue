@@ -31,8 +31,6 @@ const toggleItem = (id: number) => {
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
-  //flex-wrap: wrap;
-  //gap: 10px;
   border: 1px solid #051f54;
   background-image: linear-gradient( rgba(92,106,156,1) 0%, rgba(172,196,218,1) 79%);
   overflow-x: hidden;

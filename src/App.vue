@@ -1,7 +1,7 @@
 <template>
     <div class="container">
-      <TheBlock v-model="topLeftList" />
-      <TheBlock v-model="topRightList" />
+      <TheBlock :model-value="topLeftList" @update:model-value="updateLeftList" />
+      <TheBlock :model-value="topRightList" @update:model-value="updateRightList" />
       <TheBlock :model-value="leftList" @update:model-value="updateLeftList"/>
       <TheBlock :model-value="rightList" @update:model-value="updateRightList" />
     </div>
@@ -25,32 +25,37 @@ const leftList = ref<IListItem[]>(LEFT_LIST.map(item => {
     isActive: false
   }
 }))
-const rightList = ref(RIGHT_LIST.map(item => {
+const rightList = ref<IListItem[]>(RIGHT_LIST.map(item => {
   return {
     ...item,
     isActive: false
   }
 }))
 
-const topLeftList = computed(() => {
-  return leftList.value.filter(item => item.isActive)
-})
+const topLeftList = ref<IListItem[]>([])
+const topRightList = ref<IListItem[]>([])
 
-const topRightList = computed(() => {
-  return rightList.value.filter(item => item.isActive)
-})
-
-const updateLeftList = (arr: IListItem[], id: number) => {
-  if(arr.filter(item => item.isActive).length > 6) {
-    const index = arr.findIndex(item => item.id === id)
+const updateLeftList = (_: IListItem[], id: number) => {
+  const leftListLength = leftList.value.filter(item => item.isActive).length
+  if(leftListLength > 6) {
+    const index = leftList.value.findIndex(item => item.id === id)
     leftList.value[index].isActive = !leftList.value[index].isActive
+    return
+  }
+  if (topLeftList.value.length > leftListLength) {
+    const index = topLeftList.value.findIndex(item => item.id === id)
+    topLeftList.value.splice(index, 1)
+  } else if (topLeftList.value.length < leftListLength) {
+    const index = leftList.value.findIndex(item => item.id === id)
+    topLeftList.value.push(leftList.value[index])
   }
 }
 
-const updateRightList = (arr: IListItem[], id: number) => {
-  if(arr.filter(item => item.isActive).length > 1) {
+const updateRightList = (_: IListItem[], id: number) => {
+  if(rightList.value.filter(item => item.isActive).length > 1) {
     rightList.value = rightList.value.map(item => ({...item, isActive: item.id === id}))
   }
+  topRightList.value = rightList.value.filter(item => item.isActive)
 }
 </script>
 
